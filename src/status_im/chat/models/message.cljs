@@ -186,7 +186,7 @@
 
           :else
           (merge {:send-message (assoc-in options [:message :to] chat-id)}
-                 (when-not command) {:send-notification fcm-token}))))))
+                 (when fcm-token {:send-notification fcm-token})))))))
 
 (defn- prepare-message [params chat]
   (let [{:keys [chat-id identity message-text]} params

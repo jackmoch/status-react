@@ -1,11 +1,12 @@
 (ns status-im.chat.views.input.suggestions
-  (:require-macros [status-im.utils.views :refer [defview]])
+  (:require-macros [status-im.utils.views :refer [defview letsubs]])
   (:require [re-frame.core :as re-frame]
             [status-im.ui.components.react :as react]
             [status-im.chat.styles.input.suggestions :as style]
             [status-im.chat.views.input.animations.expandable :as expandable]
-            [status-im.chat.models.commands :as commands-model] 
-            [status-im.i18n :as i18n]))
+            [status-im.chat.models.commands :as commands-model]
+            [status-im.i18n :as i18n]
+            [taoensso.timbre :as log]))
 
 (defn suggestion-item [{:keys [on-press name description last?]}]
   [react/touchable-highlight {:on-press on-press}
@@ -33,21 +34,26 @@
     :description description
     :last?       last?}])
 
+;; (re-frame/dispatch [:set-expandable-height :suggestions (* number-of-entries style/item-height)])
+
 (defview suggestions-view []
-  [show-suggestions? [:show-suggestions?]
-   responses [:get-available-responses]
-   commands [:get-available-commands]]
-  (when show-suggestions?
-    [expandable/expandable-view {:key        :suggestions
-                                 :draggable? false
-                                 :height     100}
-     [react/view {:flex 1}
-      [react/scroll-view {:keyboardShouldPersistTaps :always}
-       (when (seq responses)
-         (for [[i response] (map-indexed vector responses)]
-           ^{:key i}
-           [response-item response (= i (dec (count responses)))]))
-       (when (seq commands)
-         (for [[i command] (map-indexed vector commands)]
-           ^{:key i}
-           [command-item command (= i (dec (count commands)))]))]]]))
+  (letsubs [show-suggestions-view? [:show-suggestions-view?]
+            responses              [:get-available-responses]
+            commands               [:get-available-commands]]
+    (let [number-of-entries (+ (count responses) (count commands))]
+      (when show-suggestions-view?
+        [expandable/expandable-view {:key             :suggestions
+                                     :draggable?      false
+                                     :height          (* number-of-entries
+                                                         style/item-height)
+                                     :dynamic-height? true}
+         [react/view {:flex 1}
+          [react/scroll-view {:keyboardShouldPersistTaps :always}
+           (when (seq responses)
+             (for [[i response] (map-indexed vector responses)]
+               ^{:key i}
+               [response-item response (= i (dec (count responses)))]))
+           (when (seq commands)
+             (for [[i command] (map-indexed vector commands)]
+               ^{:key i}
+               [command-item command (= i (dec (count commands)))]))]]]))))

@@ -5,11 +5,12 @@
 
 (def color-item-description-text "#99a0a6")
 (def color-item-border "#e8eaeb")
+(def item-height 52)
 
 (defn item-suggestion-container [last?]
   {:flex-direction      :row
    :align-items         :center
-   :height              52
+   :height              item-height
    :padding-left        14
    :padding-right       14
    :border-bottom-color color-item-border

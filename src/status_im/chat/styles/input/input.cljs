@@ -31,16 +31,16 @@
 (defstyle input-container-view
   {:ios {:z-index 1}})
 
-(defn input-root [content-height]
+(def input-root
+  {:padding-top    8
+   :padding-bottom 8
+   :flex           1})
+
+(defn input-animated [content-height]
   {:align-items      :flex-start
    :flex-direction   :row
    :flex-grow        1
    :height           (min (max min-input-height content-height) max-input-height)})
-
-(defn input-touch-handler-view [container-width]
-  {:position :absolute
-   :width    container-width
-   :height   min-input-height})
 
 (defnstyle input-view [content-height single-line-input?]
   {:flex           1
@@ -54,7 +54,7 @@
    :android        {:padding-top 3}})
 
 (def invisible-input-text
-  {:font-size        14
+  {:font-size        15
    :position         :absolute
    :left             0
    :background-color :transparent
@@ -63,7 +63,7 @@
 (defnstyle invisible-input-text-height [container-width]
   {:width            container-width
    :flex             1
-   :font-size        14
+   :font-size        15
    :padding-top      5
    :padding-bottom   5
    :android          {:padding-top 3}
@@ -74,7 +74,7 @@
 
 (defnstyle input-helper-text [left]
   {:color               color-input-helper-text
-   :font-size           14
+   :font-size           15
    :position            :absolute
    :text-align-vertical :center
    :height              min-input-height
@@ -82,11 +82,11 @@
    :android             {:left (+ 15 left)
                          :top  -1}
    :ios                 {:line-height min-input-height
-                         :left        (+ 10 left)}})
+                         :left        left}})
 
 (defnstyle seq-input-text [left container-width]
   {:min-width           (- container-width left)
-   :font-size           14
+   :font-size           15
    :position            :absolute
    :text-align-vertical :center
    :height              min-input-height
@@ -94,7 +94,7 @@
    :android             {:left (+ 10 left)
                          :top  0.5}
    :ios                 {:line-height min-input-height
-                         :left        (+ 9 left)}})
+                         :left        left}})
 
 (def input-commands-icon
   {:margin-bottom 14
@@ -107,11 +107,6 @@
    :margin-top       7
    :align-items      :center})
 
-(def input-clear-icon
-  {:width      24
-   :height     24
-   :margin-top 0})
-
 (def commands-root
   {:flex-direction :row
    :align-items    :center})
@@ -122,10 +117,6 @@
    :padding 4})
 
 (def commands-list-icon
-  {:height 24
-   :width  24})
-
-(def close-commands-list-icon
   {:height 24
    :width  24})
 
@@ -141,14 +132,3 @@
 (def send-message-icon
   {:height 22
    :width  22})
-
-(def commands
-  {:flex-direction :row
-   :margin-right   16})
-
-(defn command [first?]
-  {:color          color-command
-   :font-size      14
-   :margin-left    (if first? 10 16)
-   :padding-top    8
-   :padding-bottom 8})

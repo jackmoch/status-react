@@ -137,7 +137,7 @@
 (defn profile-info-item [{:keys [label value options text-mode empty-value? accessibility-label]}]
   [react/view styles/profile-setting-item
    [react/view (styles/profile-info-text-container options)
-    [react/text {:style styles/profile-settings-title}
+    [react/text {:style styles/profile-info-title}
      label]
     [react/view styles/profile-setting-spacing]
     [react/text {:style               (if empty-value?
@@ -159,28 +159,28 @@
                                                 :qr-source qr-source
                                                 :qr-value  qr-value}]))
 
-(defn profile-options [contact k text]
+(defn profile-options [text]
   (into []
-        (concat [{:action (show-qr contact k text)
-                  :label  (i18n/label :t/show-qr)}]
-                (when text
-                  (list-selection/share-options text)))))
+        (when text
+          (list-selection/share-options text))))
 
-(defn profile-info-address-item [{:keys [address] :as contact}]
+(defn profile-info-address-item [address]
   [profile-info-item
    {:label               (i18n/label :t/address)
     :action              address
-    :options             (profile-options contact :address address)
+    :options             (profile-options address)
     :text-mode           :middle
-    :accessibility-label :profile-address}])
+    :accessibility-label :profile-address
+    :value               address}])
 
-(defn profile-info-public-key-item [public-key contact]
+(defn profile-info-public-key-item [whisper-identity]
   [profile-info-item
    {:label               (i18n/label :t/public-key)
-    :action              public-key
-    :options             (profile-options contact :public-key public-key)
+    :action              whisper-identity
+    :options             (profile-options whisper-identity)
     :text-mode           :middle
-    :accessibility-label :profile-public-key}])
+    :accessibility-label :profile-public-key
+    :value               whisper-identity}])
 
 (defn settings-item-separator []
   [common/separator styles/settings-item-separator])
@@ -214,11 +214,11 @@
     (when active?
       [vector-icons/icon :icons/forward {:color colors/gray}])]])
 
-(defn profile-info [{:keys [whisper-identity] :as contact}]
+(defn profile-info [{:keys [whisper-identity address]}]
   [react/view
-   [profile-info-address-item contact]
+   [profile-info-address-item address]
    [settings-item-separator]
-   [profile-info-public-key-item whisper-identity contact]])
+   [profile-info-public-key-item whisper-identity]])
 
 (defn navigate-to-accounts []
   ;; TODO(rasom): probably not the best place for this call
@@ -253,19 +253,6 @@
    (when config/offline-inbox-enabled?
      [settings-item :t/offline-messaging-settings ""
       #(re-frame/dispatch [:navigate-to :offline-messaging-settings]) true])])
-
-(defn profile-status [status & [edit?]]
-  [react/view styles/profile-status-container
-   (if (or (nil? status) (string/blank? status))
-     [react/touchable-highlight {:on-press #(re-frame/dispatch [:my-profile/edit-profile :edit-status])}
-      [react/view
-       [react/text {:style styles/add-a-status}
-        (i18n/label :t/add-a-status)]]]
-     [react/scroll-view
-      [react/touchable-highlight {:on-press (when edit? #(re-frame/dispatch [:my-profile/edit-profile :edit-status]))}
-       [react/view
-        [react/text {:style styles/profile-status-text}
-         (colorize-status-hashtags status)]]]])])
 
 (defn network-info []
   [react/view styles/network-info
@@ -302,8 +289,7 @@
       [logout]]]))
 
 (defview profile []
-  (letsubs [{:keys [status]
-             :as   contact} [:contact]
+  (letsubs [contact [:contact]
             chat-id [:get :current-chat-id]]
     [react/view styles/profile
      [status-bar/status-bar]
@@ -311,9 +297,7 @@
      [network-info]
      [react/scroll-view
       [react/view styles/profile-form
-       [profile-badge contact]
-       (when (and (not (nil? status)) (not (string/blank? status)))
-         [profile-status status])]
+       [profile-badge contact]]
       [common/form-spacer]
       [profile-actions contact chat-id]
       [common/form-spacer]

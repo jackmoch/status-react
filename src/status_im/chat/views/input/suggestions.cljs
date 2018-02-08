@@ -10,9 +10,8 @@
 (defn suggestion-item [{:keys [on-press name description last?]}]
   [react/touchable-highlight {:on-press on-press}
    [react/view (style/item-suggestion-container last?)
-    [react/view {:style style/item-suggestion-name}
-     [react/text {:style style/item-suggestion-name-text
-                  :font  :roboto-mono} name]]
+    [react/text {:style style/item-suggestion-name}
+     name]
     [react/text {:style           style/item-suggestion-description
                  :number-of-lines 2}
      description]]])
@@ -34,11 +33,6 @@
     :description description
     :last?       last?}])
 
-(defn item-title [top-padding? title]
-  [react/view (style/item-title-container top-padding?)
-   [react/text {:style style/item-title-text}
-    title]])
-
 (defview suggestions-view []
   [show-suggestions? [:show-suggestions?]
    responses [:get-available-responses]
@@ -46,18 +40,14 @@
   (when show-suggestions?
     [expandable/expandable-view {:key        :suggestions
                                  :draggable? false
-                                 :height     212}
+                                 :height     100}
      [react/view {:flex 1}
       [react/scroll-view {:keyboardShouldPersistTaps :always}
        (when (seq responses)
-         [react/view
-          [item-title false (i18n/label :t/suggestions-requests)]
-          (for [[i response] (map-indexed vector responses)]
-            ^{:key i}
-            [response-item response (= i (dec (count responses)))])])
+         (for [[i response] (map-indexed vector responses)]
+           ^{:key i}
+           [response-item response (= i (dec (count responses)))]))
        (when (seq commands)
-         [react/view
-          [item-title (seq responses) (i18n/label :t/suggestions-commands)]
-          (for [[i command] (map-indexed vector commands)]
-            ^{:key i}
-            [command-item command (= i (dec (count commands)))])])]]]))
+         (for [[i command] (map-indexed vector commands)]
+           ^{:key i}
+           [command-item command (= i (dec (count commands)))]))]]]))

@@ -160,14 +160,6 @@
     (.then clipboard-contents #(clbk %))))
 
 
-;; Emoji
-
-(def emoji-picker-class rn-dependencies/emoji-picker)
-
-(def emoji-picker
-  (let [emoji-picker (.-default emoji-picker-class)]
-    (r/adapt-react-class emoji-picker)))
-
 ;; Autolink
 
 (def autolink-class (r/adapt-react-class (.-default rn-dependencies/autolink)))

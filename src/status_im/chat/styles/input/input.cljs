@@ -9,54 +9,45 @@
 (def color-input-helper-text "rgb(182, 189, 194)")
 (def color-input-helper-placeholder "rgb(182, 189, 194)")
 (def color-command "#70777d")
-(def color-send "rgb(98, 143, 227)")
+(def color-send "#4360df")
 
-(def min-input-height 38)
+(def min-input-height 36)
 (def max-input-height (* 4 min-input-height))
 
-(defnstyle root [margin-bottom]
-  {:flex-direction   :column
+(defn root [margin-bottom]
+  {:background-color common/color-white
    :elevation        2
    :margin-bottom    margin-bottom
    :border-top-width 1
-   :border-top-color color-root-border})
+   :border-top-color color-root-border
+   :flex-direction   :column})
 
-(defn container [container-anim-margin bottom-anim-margin]
-  {:background-color common/color-white
-   :flex-direction   :column
-   :padding-left     container-anim-margin
-   :padding-right    container-anim-margin
-   :padding-top      8
-   :padding-bottom   bottom-anim-margin})
+(def input-container
+  {:flex-direction   :row
+   :align-items      :flex-end
+   :padding-left     14
+   :padding-right    14})
 
 (defstyle input-container-view
   {:ios {:z-index 1}})
 
-(def input-container
-  {:flex-direction :row
-   :align-items    :flex-end})
-
-(defn input-root [content-height anim-margin]
+(defn input-root [content-height]
   {:align-items      :flex-start
-   :background-color color-input
    :flex-direction   :row
    :flex-grow        1
-   :height           (min (max min-input-height content-height) max-input-height)
-   :margin-top       anim-margin
-   :padding-left     10
-   :padding-right    10
-   :border-radius    8})
+   :height           (min (max min-input-height content-height) max-input-height)})
 
-(defnstyle input-touch-handler-view [container-width]
+(defn input-touch-handler-view [container-width]
   {:position :absolute
    :width    container-width
    :height   min-input-height})
 
 (defnstyle input-view [content-height single-line-input?]
   {:flex           1
-   :font-size      14
+   :font-size      15
    :padding-top    9
    :padding-bottom 5
+   :padding-right  12
    :height         (if single-line-input?
                      min-input-height
                      (+ (min (max min-input-height content-height) max-input-height)))
@@ -105,10 +96,10 @@
    :ios                 {:line-height min-input-height
                          :left        (+ 9 left)}})
 
-(def input-emoji-icon
-  {:margin-top 7
-   :height 24
-   :width  24})
+(def input-commands-icon
+  {:margin-bottom 14
+   :height        24
+   :width         24})
 
 (def input-clear-container
   {:width            24
@@ -140,15 +131,16 @@
 
 (def send-message-container
   {:background-color color-send
-   :width            38
-   :height           38
-   :border-radius    19
-   :padding          7
-   :margin-left      8})
+   :width            30
+   :height           30
+   :border-radius    15
+   :padding          4
+   :margin-left      8
+   :margin-bottom    10})
 
 (def send-message-icon
-  {:height 24
-   :width  24})
+  {:height 22
+   :width  22})
 
 (def commands
   {:flex-direction :row
